@@ -2,9 +2,7 @@ const statusDisplay = document.querySelector('.game--status');
 let gameActive = true;
 let currentPlayer = "X";
 let gameState = ["", "", "", "", "", "", "", "", ""];
-const winningMessage = () => `Player ${currentPlayer} has won!`;
-const drawMessage = () => `Game ended in a draw!`;
-const currentPlayerTurn = () => `It's ${currentPlayer}'s turn`;
+const currentPlayerTurn = () => `${currentPlayer}'s turn`;
 statusDisplay.innerHTML = currentPlayerTurn();
 const winningConditions = [
     [0, 1, 2],
@@ -20,10 +18,20 @@ const winningConditions = [
 function handleCellPlayed(clickedCell, clickedCellIndex) {
         gameState[clickedCellIndex] = currentPlayer;
         clickedCell.innerHTML = currentPlayer;
+        
     }
     function handlePlayerChange() {
-        currentPlayer = currentPlayer === "X" ? "O" : "X";
-        statusDisplay.innerHTML = currentPlayerTurn();
+        if(currentPlayer == "X")
+        {
+            currentPlayer = "O"
+            clickedCell.className = "xcell";
+        }
+        else
+        {
+            currentPlayer = "X"
+            clickedCell.className = "ocell";
+        }
+        statusDisplay.innerHTML = (currentPlayer+"s turn");
     }
     
 function handleResultValidation() {
@@ -33,6 +41,7 @@ function handleResultValidation() {
         let a = gameState[winCondition[0]];
         let b = gameState[winCondition[1]];
         let c = gameState[winCondition[2]];
+        //checking if game is over
         if (a === '' || b === '' || c === '') {
             continue;
         }
@@ -41,15 +50,15 @@ function handleResultValidation() {
             break
         }
     }
-if (roundWon) {
-        statusDisplay.innerHTML = winningMessage();
-        gameActive = false;
-        return;
-    }
+    if (roundWon) {
+            statusDisplay.innerHTML = (currentPlayer + " has won!");
+            gameActive = false;
+            return;
+        }
 
     let roundDraw = !gameState.includes("");
     if (roundDraw) {
-        statusDisplay.innerHTML = drawMessage();
+        statusDisplay.innerHTML = "Its a tie";
         gameActive = false;
         return;
     }
@@ -59,9 +68,7 @@ if (roundWon) {
 function handleCellClick(clickedCellEvent) {
    
         const clickedCell = clickedCellEvent.target;
-        const clickedCellIndex = parseInt(
-          clickedCell.getAttribute('data-cell-index')
-        );
+        const clickedCellIndex = parseInt(clickedCell.getAttribute('data-cell-index'));
         if (gameState[clickedCellIndex] !== "" || !gameActive) {
             return;
         } 
@@ -70,11 +77,19 @@ function handleCellClick(clickedCellEvent) {
     }
     function handleRestartGame() {
         gameActive = true;
-        currentPlayer = "X";
+        if(currentPlayer=="X")//Who ever wins goes first
+        {
+            currentPlayer=="O";
+        }
+        else{
+            currentPlayer=="O";
+        }
         gameState = ["", "", "", "", "", "", "", "", ""];
         statusDisplay.innerHTML = currentPlayerTurn();
         document.querySelectorAll('.cell')
-                   .forEach(cell => cell.innerHTML = "");
+        .forEach(cell => cell.innerHTML = "");
     }
+
+
 document.querySelectorAll('.cell').forEach(cell => cell.addEventListener('click', handleCellClick));
 document.querySelector('.game--restart').addEventListener('click', handleRestartGame);
